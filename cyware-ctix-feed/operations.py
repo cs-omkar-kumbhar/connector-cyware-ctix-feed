@@ -1,14 +1,16 @@
-""" Copyright start
-  Copyright (C) 2008 - 2023 Fortinet Inc.
-  All rights reserved.
-  FORTINET CONFIDENTIAL & FORTINET PROPRIETARY SOURCE CODE
-  Copyright end """
+"""
+Copyright start
+MIT License
+Copyright (c) 2024 Fortinet Inc
+Copyright end
+"""
 
 import time, base64, hashlib, hmac
 from requests import request, exceptions as req_exceptions
 from connectors.core.connector import get_logger, ConnectorError
 from datetime import datetime
-logger = get_logger('cyware-feed')
+
+logger = get_logger('cyware-ctix-feed')
 
 
 class CywareFeed:
@@ -26,14 +28,15 @@ class CywareFeed:
         return base64.b64encode(hmac.new(self.secret_key.encode('utf-8'), to_sign.encode('utf-8'),
                                          hashlib.sha1).digest()).decode('utf-8')
 
-    def make_rest_call(self, endpoint, params={}, method='GET'):
+    def make_rest_call(self, endpoint, params={}, data={}, method='GET'):
         service_endpoint = '{0}{1}'.format(self.base_url, endpoint)
         expires = int(time.time() + 30)
         params['AccessID'] = self.access_id
         params['Expires'] = expires
         params['Signature'] = self.get_signature(expires)
         try:
-            response = request(method, service_endpoint, verify=self.verify_ssl, params=params)
+            logger.info(f"\nurl: {service_endpoint}\nparams: {params}\ndata: {data}")
+            response = request(method, service_endpoint, verify=self.verify_ssl, params=params, data=data)
             if response.status_code in [200, 201, 204]:
                 if response.text != "":
                     return response.json()
@@ -68,8 +71,10 @@ class CywareFeed:
             raise ConnectorError(str(err))
 
 
-def build_params(config, params):
-    new_params = {"version": config.get("version")}
+def build_params(config, params, version=True):
+    new_params = {}
+    if version:
+        new_params["version"] = config.get("version")
     for k, v in params.items():
         if v is not None and v != '':
             if k in ("from_timestamp", "to_timestamp") and isinstance(v, str):
@@ -119,6 +124,25 @@ def get_save_result_set_indicators(config, params):
     return response
 
 
+def get_threat_data(config, params):
+    ob = CywareFeed(config)
+    params = build_params(config, params, version=False)
+    cql_query = params.pop("query", None)
+    data = {"query": cql_query} if cql_query else {}
+    if params.get("fetch_all_records"):
+        page, indicators, resp_indicators = 1, list(), True
+        while resp_indicators:
+            params.update({"page": page, "page_size": 100})
+            response = ob.make_rest_call("/ingestion/threat-data/list/", params=params, data=data, method="POST")
+            resp_indicators = response.get("results", [])
+            indicators += resp_indicators
+            page += 1
+        response.update({"results": indicators})
+    else:
+        response = ob.make_rest_call("/ingestion/threat-data/list/", params=params, data=data, method="POST")
+    return response
+
+
 def _check_health(config):
     ob = CywareFeed(config)
     params = {
@@ -131,5 +155,6 @@ def _check_health(config):
 
 operations = {
     "get_save_result_set_data": get_save_result_set_data,
-    "get_save_result_set_indicators": get_save_result_set_indicators
+    "get_save_result_set_indicators": get_save_result_set_indicators,
+    "get_threat_data": get_threat_data
 }

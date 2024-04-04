@@ -1,7 +1,7 @@
 {
   "name": "cyware-ctix-feed",
   "label": "Cyware CTIX Feed",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An automated Threat Intelligence Platform (TIP) for ingestion, enrichment, analysis, prioritization, actioning, and bidirectional sharing of threat data.",
   "publisher": "Fortinet",
   "cs_approved": false,
@@ -9,7 +9,7 @@
   "category": "Threat Intelligence Exchange",
   "icon_small_name": "cyware_ctix_small.png",
   "icon_large_name": "cyware_ctix_large.png",
-  "help_online": "https://docs.fortinet.com/document/fortisoar/1.0.0/cyware-ctix-feed/652/cyware-ctix-feed-v1-0-0",
+  "help_online": "",
   "ingestion_supported": true,
   "ingestion_modes": [
     "scheduled"
@@ -330,6 +330,153 @@
               "attribute_field": ""
             },
             "is_false_positive": ""
+          }
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "operation": "get_threat_data",
+      "title": "Get Threat Data",
+      "description": "Retrieves the detailed list of threat data objects from the CTIX application. You can retrieve a maximum of 5,00,000 threat data objects using this API.",
+      "category": "investigation",
+      "annotation": "get_threat_data",
+      "parameters": [
+        {
+          "title": "CQL Query",
+          "name": "query",
+          "type": "text",
+          "description": "Specify the CQL query to filter and fetch results. eg: type = \"indicator\"",
+          "tooltip": "Specify the CQL query to filter and fetch results. eg: type = \"indicator\"",
+          "required": true,
+          "editable": true,
+          "visible": true,
+          "placeholder": "type = \"indicator\""
+        },
+        {
+          "title": "Page Number",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "integer",
+          "name": "page",
+          "value": 1,
+          "tooltip": "Specify the page number from which to retrieve the records. The default value is 1.",
+          "description": "Specify the page number from which to retrieve the records. The default value is 1."
+        },
+        {
+          "title": "Page Size",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "integer",
+          "name": "page_size",
+          "value": 100,
+          "tooltip": "Specify the count of records that the operation should include per page.",
+          "description": "Specify the count of records that the operation should include per page."
+        },
+        {
+          "title": "Limit",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "integer",
+          "name": "page_limit",
+          "tooltip": "Specify the maximum number of threat data objects to be retrieved.",
+          "description": "Specify the maximum number of threat data objects to be retrieved."
+        },
+        {
+          "title": "Enrichment",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "checkbox",
+          "name": "enrichment",
+          "tooltip": "Select the checkbox to retrieve the details of the last enrichment for the objects that can be enriched.",
+          "description": "Select the checkbox to retrieve the details of the last enrichment for the objects that can be enriched."
+        },
+        {
+          "title": "Sort",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "text",
+          "name": "sort",
+          "tooltip": "Specify the field by which you want to sort the records. By default it will be sorted in ascending and by adding '-' prefix it will sorted in descending order. eg: -ctix_created",
+          "description": "Specify the field by which you want to sort the records. By default it will be sorted in ascending and by adding '-' prefix it will sorted in descending order. eg: -ctix_created",
+          "placeholder": "eg: -ctix_created"
+        },
+        {
+          "title": "Fetch All Records",
+          "required": false,
+          "editable": true,
+          "visible": true,
+          "type": "checkbox",
+          "name": "fetch_all_records",
+          "tooltip": "Select the checkbox to fetch all records.",
+          "description": "Select the checkbox to fetch all records."
+        }
+      ],
+      "output_schema": {
+        "next": "",
+        "page_size": "",
+        "previous": "",
+        "total": "",
+        "results": [
+          {
+            "analyst_score": "",
+            "analyst_tlp": "",
+            "confidence_score": "",
+            "confidence_type": "",
+            "country": "",
+            "created": "",
+            "ctix_created": "",
+            "ctix_modified": "",
+            "first_seen": "",
+            "id": "",
+            "indicator_type": "",
+            "ioc_type": "",
+            "is_actioned": "",
+            "is_deprecated": "",
+            "is_false_positive": "",
+            "is_reviewed": "",
+            "is_revoked": "",
+            "is_whitelisted": "",
+            "last_seen": "",
+            "modified": "",
+            "name": "",
+            "null": [],
+            "primary_attribute": "",
+            "published_collections": [],
+            "severity": "",
+            "source_collections": [
+              {
+                "id": "",
+                "name": ""
+              }
+            ],
+            "source_confidence": "",
+            "sources": [
+              {
+                "id": "",
+                "name": "",
+                "source_type": ""
+              }
+            ],
+            "sub_type": "",
+            "subscriber_collections": [],
+            "subscribers": [],
+            "tags": [
+              {
+                "colour_code": "",
+                "id": "",
+                "name": ""
+              }
+            ],
+            "tlp": "",
+            "type": "",
+            "valid_from": "",
+            "valid_until": ""
           }
         ]
       },
