@@ -144,12 +144,12 @@ def get_threat_data(config, params):
 
 
 def _check_health(config):
-    ob = CywareFeed(config)
     params = {
-        "version": config.get("version"),
-        "from_timestamp": int(datetime.now().timestamp())
+        "query": 'type="indicator"',
+        "page": 1,
+        "page_size": 5
     }
-    resp = ob.make_rest_call("/ingestion/rules/save_result_set/", params=params)
+    resp = get_threat_data(config, params)
     return True
 
 
